@@ -15,6 +15,15 @@ from uuid import UUID
 from ragengine.models import Chunk, ScoredChunk
 
 
+def _tiebreak(chunk: Chunk) -> tuple[str, int, str]:
+    """Deterministic order for equal scores: source document, then position, then id.
+
+    Breaking ties on the random chunk UUID alone made evaluation runs over the same corpus
+    differ slightly from run to run, which hid small real changes (found while measuring
+    BM25 stemming, issue #2)."""
+    return (str(chunk.metadata.get("source", "")), chunk.ordinal, str(chunk.id))
+
+
 def rrf(result_lists: Sequence[Sequence[ScoredChunk]], k: int = 60) -> list[ScoredChunk]:
     if k <= 0:
         raise ValueError("k must be positive")
@@ -24,7 +33,7 @@ def rrf(result_lists: Sequence[Sequence[ScoredChunk]], k: int = 60) -> list[Scor
         for rank, hit in enumerate(results, start=1):
             scores[hit.chunk.id] = scores.get(hit.chunk.id, 0.0) + 1.0 / (k + rank)
             chunks[hit.chunk.id] = hit.chunk
-    ordered = sorted(scores.items(), key=lambda kv: (-kv[1], str(kv[0])))
+    ordered = sorted(scores.items(), key=lambda kv: (-kv[1], _tiebreak(chunks[kv[0]])))
     return [ScoredChunk(chunks[cid], score, "rrf") for cid, score in ordered]
 
 
@@ -46,5 +55,5 @@ def weighted(
     kw, vec = _min_max(keyword), _min_max(vector)
     chunks = {r.chunk.id: r.chunk for r in (*keyword, *vector)}
     fused = {cid: (1 - alpha) * kw.get(cid, 0.0) + alpha * vec.get(cid, 0.0) for cid in chunks}
-    ordered = sorted(fused.items(), key=lambda kv: (-kv[1], str(kv[0])))
+    ordered = sorted(fused.items(), key=lambda kv: (-kv[1], _tiebreak(chunks[kv[0]])))
     return [ScoredChunk(chunks[cid], score, "weighted") for cid, score in ordered]

@@ -141,3 +141,24 @@ async def test_bm25_index_rebuilds_after_new_document() -> None:
         filename="leave.md",
     )
     assert len(await bm25.search(flt, "vacation", 3)) == 1
+
+
+def test_fusion_ties_break_deterministically_not_by_random_id() -> None:
+    doc = uuid.uuid4()
+
+    def chunk(source: str, ordinal: int) -> Chunk:
+        return Chunk(f"{source}-{ordinal}", ordinal, 1, doc, metadata={"source": source})
+
+    for _ in range(5):  # fresh random UUIDs each time; order must not change
+        a, b, c = chunk("b.md", 0), chunk("a.md", 1), chunk("a.md", 0)
+        tied = [ScoredChunk(x, 1.0, "bm25") for x in (a, b, c)]
+        assert [h.chunk.text for h in rrf([tied[:1], tied[1:2], tied[2:]])] == [
+            "a.md-0",
+            "a.md-1",
+            "b.md-0",
+        ]
+        assert [h.chunk.text for h in weighted(tied, [], alpha=0.0)] == [
+            "a.md-0",
+            "a.md-1",
+            "b.md-0",
+        ]
