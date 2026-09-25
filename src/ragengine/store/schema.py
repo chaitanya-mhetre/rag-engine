@@ -6,6 +6,7 @@ import os
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
+    Boolean,
     Column,
     Computed,
     DateTime,
@@ -13,6 +14,7 @@ from sqlalchemy import (
     Index,
     Integer,
     MetaData,
+    Numeric,
     String,
     Table,
     Text,
@@ -116,4 +118,86 @@ chunks = Table(
         postgresql_with={"m": 16, "ef_construction": 64},
         postgresql_ops={"embedding": "vector_cosine_ops"},
     ),
+)
+
+# --- 0002: auth, conversations, query logs ---------------------------------
+
+users = Table(
+    "users",
+    metadata,
+    Column("id", UUID(as_uuid=True), primary_key=True),
+    Column("tenant_id", UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False),
+    Column("email", String(320), nullable=False, unique=True),
+    Column("password_hash", Text, nullable=False),
+    Column("role", String(20), nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+)
+
+collection_members = Table(
+    "collection_members",
+    metadata,
+    Column(
+        "collection_id",
+        UUID(as_uuid=True),
+        ForeignKey("collections.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "user_id", UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    ),
+    Column("permission", Integer, nullable=False),  # 1 read, 2 write, 3 admin
+)
+
+conversations = Table(
+    "conversations",
+    metadata,
+    Column("id", UUID(as_uuid=True), primary_key=True),
+    Column("tenant_id", UUID(as_uuid=True), nullable=False),
+    Column("user_id", UUID(as_uuid=True), ForeignKey("users.id"), nullable=False),
+    Column("collection_ids", ARRAY(UUID(as_uuid=True)), nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+)
+
+messages = Table(
+    "messages",
+    metadata,
+    Column("id", UUID(as_uuid=True), primary_key=True),
+    Column(
+        "conversation_id",
+        UUID(as_uuid=True),
+        ForeignKey("conversations.id", ondelete="CASCADE"),
+        nullable=False,
+    ),
+    Column("role", String(20), nullable=False),
+    Column("content", Text, nullable=False),
+    Column("citations", JSONB, nullable=False, server_default="[]"),
+    Column("query_log_id", UUID(as_uuid=True), nullable=True),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    Index("ix_messages_conversation", "conversation_id", "created_at"),
+)
+
+query_logs = Table(
+    "query_logs",
+    metadata,
+    Column("id", UUID(as_uuid=True), primary_key=True),
+    Column("tenant_id", UUID(as_uuid=True), nullable=False),
+    Column("user_id", UUID(as_uuid=True), nullable=True),
+    Column("query", Text, nullable=False),
+    Column("rewritten_query", Text, nullable=False),
+    Column("filters", JSONB, nullable=False),
+    Column("retrieved", JSONB, nullable=False),
+    Column("context_chunk_ids", ARRAY(UUID(as_uuid=True)), nullable=False),
+    Column("model", String(200), nullable=False),
+    Column("prompt_version", String(50), nullable=False),
+    Column("prompt_tokens", Integer, nullable=False),
+    Column("completion_tokens", Integer, nullable=False),
+    Column("usage_estimated", Boolean, nullable=False),
+    Column("est_cost_usd", Numeric(14, 8), nullable=True),
+    Column("latency_ms", JSONB, nullable=False),
+    Column("refused", Boolean, nullable=False),
+    Column("refusal_reason", String(50), nullable=True),
+    Column("invalid_citations", JSONB, nullable=False),
+    Column("injection_flags", Integer, nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    Index("ix_query_logs_tenant_created", "tenant_id", "created_at"),
 )
