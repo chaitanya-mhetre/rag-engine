@@ -43,8 +43,14 @@ class Settings(BaseSettings):
     jwt_access_ttl_minutes: int = 30
     jwt_refresh_ttl_days: int = 7
 
+    # API limits
+    max_upload_bytes: int = 20 * 1024 * 1024
+    rate_limit_capacity: int = 60  # burst size per user
+    rate_limit_per_second: float = 1.0  # sustained queries per second per user
+    keyword_retriever: Literal["bm25", "pg_fts"] = "bm25"
+
     # Cost table file
-    models_config: str = "config/models.yaml"
+    models_config: str = "config/models.json"
 
 
 @lru_cache
