@@ -51,7 +51,7 @@ class Settings(BaseSettings):
     # BM25 text analysis (hand BM25 only; Postgres FTS always uses the "english" config).
     # Defaults are decided by `evaluation/reports/bm25_stemming.md`: change them only with an
     # eval run that shows an improvement.
-    bm25_stemmer: Literal["none", "light", "snowball"] = "none"
+    bm25_stemmer: Literal["none", "light", "snowball"] = "light"
     bm25_stopwords: bool = True
 
     # Cost table file

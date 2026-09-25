@@ -49,7 +49,7 @@ class RunConfig:
     alpha: float = 0.5
     reranker: str = "lexical"
     generate: bool = False  # run the answer pipeline too (generation metrics)
-    bm25_stemmer: StemmerName = "none"
+    bm25_stemmer: StemmerName = "light"  # keep in sync with Settings.bm25_stemmer
     bm25_stopwords: bool = True
 
     def analyzer(self) -> Analyzer:

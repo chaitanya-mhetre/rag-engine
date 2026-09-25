@@ -30,11 +30,10 @@ def _run(args: argparse.Namespace) -> int:
         configs = [replace(c, reranker=args.reranker) for c in configs]
     if args.generate:
         configs = [replace(c, generate=True) for c in configs]
-    if args.bm25_stemmer != "none" or args.bm25_no_stopwords:
-        configs = [
-            replace(c, bm25_stemmer=args.bm25_stemmer, bm25_stopwords=not args.bm25_no_stopwords)
-            for c in configs
-        ]
+    if args.bm25_stemmer:
+        configs = [replace(c, bm25_stemmer=args.bm25_stemmer) for c in configs]
+    if args.bm25_no_stopwords:
+        configs = [replace(c, bm25_stopwords=False) for c in configs]
     sizes = [int(s) for s in args.chunk_sizes.split(",")] if args.chunk_sizes else []
     configs = expand_chunk_ablation(configs, sizes)
 
@@ -116,8 +115,8 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument(
         "--bm25-stemmer",
         choices=["none", "light", "snowball"],
-        default="none",
-        help="stemmer for the hand BM25 retriever (applies to every config)",
+        default=None,
+        help="override the BM25 stemmer for every config (default: the config's own, 'light')",
     )
     run.add_argument(
         "--bm25-no-stopwords", action="store_true", help="keep stopwords in the BM25 index"
