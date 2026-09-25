@@ -1,0 +1,9 @@
+{
+  "_comment": "USD per 1M tokens. null = price not recorded yet; cost is then reported as null, never guessed. Fill in from the provider's pricing page and record source + date.",
+  "models": {
+    "fake-extractive-v1": {"input_per_mtok": 0.0, "output_per_mtok": 0.0, "source": "offline fake provider", "as_of": null},
+    "hashing-v1": {"input_per_mtok": 0.0, "output_per_mtok": 0.0, "source": "offline fake provider", "as_of": null},
+    "gpt-4o-mini": {"input_per_mtok": null, "output_per_mtok": null, "source": "https://openai.com/api/pricing", "as_of": null},
+    "gemini-2.5-flash": {"input_per_mtok": null, "output_per_mtok": null, "source": "https://ai.google.dev/pricing", "as_of": null}
+  }
+}
