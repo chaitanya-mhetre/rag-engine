@@ -17,6 +17,7 @@ from uuid import UUID
 from ragengine.embeddings import Embedder
 from ragengine.ingestion.parsers import detect_mime
 from ragengine.ingestion.pipeline import Ingestor, sha256
+from ragengine.observability import INGESTION_JOBS
 from ragengine.storage import FileStorage
 from ragengine.store.base import DocumentRecord, Store, VersionRecord, VersionStatus
 
@@ -54,6 +55,7 @@ class IndexingService:
     ) -> VersionHandle:
         mime = detect_mime(data, filename)  # reject bad files before storing anything
         digest = sha256(data)
+        doc: DocumentRecord | None = None
         if document_id is not None:
             doc = await self.store.get_document(tenant_id, document_id)
             if doc is None or doc.collection_id != collection_id:
@@ -61,6 +63,7 @@ class IndexingService:
             existing = await self.store.find_version_by_sha(doc.id, digest)
             if existing is not None:
                 return VersionHandle(doc, existing, created=False)
+            number = await self.store.next_version_number(doc.id)
         else:
             doc = DocumentRecord(
                 tenant_id=tenant_id,
@@ -71,11 +74,14 @@ class IndexingService:
                 tags=list(tags or []),
                 created_by=created_by,
             )
-            await self.store.create_document(doc)
+            number = 1
 
-        number = await self.store.next_version_number(doc.id)
+        # Write the file BEFORE any database row: if storage fails we leave nothing behind.
+        # (The reverse order left orphan document rows pointing at files that never existed.)
         key = f"{tenant_id}/{doc.id}/v{number}/{digest[:16]}"
         await self.files.put(key, data)
+        if document_id is None:
+            await self.store.create_document(doc)
         version = VersionRecord(
             document_id=doc.id, version=number, content_sha256=digest, storage_key=key
         )
@@ -115,7 +121,9 @@ class IndexingService:
         except Exception as exc:
             log.exception("ingestion failed for version %s", version_id)
             await self.store.set_version_status(version_id, VersionStatus.FAILED, error=str(exc))
+            INGESTION_JOBS.labels("failed").inc()
             raise
+        INGESTION_JOBS.labels("ready").inc()
         refreshed = await self.store.get_version(version_id)
         assert refreshed is not None
         return refreshed

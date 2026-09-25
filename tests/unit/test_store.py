@@ -177,3 +177,21 @@ def test_filter_requires_a_collection() -> None:
 
     with pytest.raises(ValueError):
         SearchFilter(uuid.uuid4(), ())
+
+
+async def test_storage_failure_leaves_no_orphan_rows(store: Store) -> None:
+    scope = await make_scope(store)
+    idx = make_indexer(store)
+
+    async def broken_put(key: str, data: bytes) -> None:
+        raise PermissionError("read-only disk")
+
+    idx.files.put = broken_put  # type: ignore[method-assign]
+    with pytest.raises(PermissionError):
+        await idx.create_version(
+            tenant_id=scope.tenant_id,
+            collection_id=scope.collection_id,
+            data=HANDBOOK,
+            filename="hb.md",
+        )
+    assert await store.list_documents(scope.tenant_id, scope.collection_id) == []
