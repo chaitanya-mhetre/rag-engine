@@ -13,6 +13,7 @@ from ragengine.indexing import IndexingService
 from ragengine.ingestion.chunking import RecursiveChunker
 from ragengine.ingestion.pipeline import Ingestor
 from ragengine.jobs import ArqQueue, InlineQueue, JobQueue
+from ragengine.observability import MetricsSink
 from ragengine.pipeline import RAGPipeline
 from ragengine.ratelimit import MemoryRateLimiter, RateLimiter, RedisRateLimiter
 from ragengine.retrieval.retrievers import (
@@ -88,7 +89,7 @@ def build_container(settings: Settings) -> Container:
         build_llm(settings),
         context_builder=ContextBuilder(token_budget=settings.context_token_budget),
         prices=PriceTable.load(settings.models_config),
-        sink=access,
+        sink=MetricsSink(access),
         refusal_threshold=settings.refusal_threshold,
     )
     jobs: JobQueue = ArqQueue(settings.redis_url) if settings.redis_url else InlineQueue(indexer)

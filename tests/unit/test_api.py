@@ -257,7 +257,33 @@ async def test_new_version_and_delete(tmp_path: Path) -> None:
         ] is True
 
 
-async def test_health(tmp_path: Path) -> None:
-    async with api(tmp_path) as (client, _):
+async def test_health_metrics_and_request_id(tmp_path: Path) -> None:
+    async with api(tmp_path) as (client, container):
         assert (await client.get("/v1/health")).json() == {"status": "ok"}
         assert (await client.get("/v1/ready")).json() == {"status": "ready"}
+        h = await signup(client, "a@acme.io")
+        cid = await create_collection(client, h, "hr")
+        await upload(client, container, h, cid, "handbook.md", HANDBOOK)
+        r = await client.post(
+            "/v1/query",
+            json={"question": "vacation days", "collection_ids": [cid]},
+            headers={**h, "X-Request-ID": "req-123"},
+        )
+        assert r.headers["X-Request-ID"] == "req-123"
+        metrics = (await client.get("/metrics")).text
+        assert 'rag_query_latency_seconds_bucket{le="0.001",stage="total"}' in metrics
+        assert "rag_ingestion_jobs_total" in metrics
+        assert (
+            'rag_http_request_seconds_count{method="POST",route="/v1/query",status="200"}'
+            in metrics
+        )
+
+
+async def test_memory_rate_limiter_refills() -> None:
+    from ragengine.ratelimit import MemoryRateLimiter
+
+    limiter = MemoryRateLimiter(capacity=1, rate=2.0)
+    assert (await limiter.hit("k", now=0.0)).allowed
+    denied = await limiter.hit("k", now=0.1)
+    assert not denied.allowed and 0 < denied.retry_after <= 0.5
+    assert (await limiter.hit("k", now=0.6)).allowed
