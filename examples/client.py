@@ -1,6 +1,6 @@
 """Minimal Python client for the RAG Engine API (httpx). Run the docker stack first.
 
-    uv run python examples/client.py
+uv run python examples/client.py
 """
 
 from __future__ import annotations
@@ -31,13 +31,20 @@ def main() -> None:
 
         jobs = []
         for path in sorted(CORPUS.iterdir()):
-            r = client.post(f"/collections/{cid}/documents", files={"file": (path.name, path.read_bytes())})
+            files = {"file": (path.name, path.read_bytes())}
+            r = client.post(f"/collections/{cid}/documents", files=files)
             jobs.append(r.json()["job_id"])
-        while any(client.get(f"/jobs/{j}").json()["status"] not in ("ready", "failed") for j in jobs):
+
+        def pending() -> bool:
+            done = ("ready", "failed")
+            return any(client.get(f"/jobs/{j}").json()["status"] not in done for j in jobs)
+
+        while pending():
             time.sleep(0.5)
 
         answer = client.post(
-            "/query", json={"question": "How many vacation days do employees get?", "collection_ids": [cid]}
+            "/query",
+            json={"question": "How many vacation days do employees get?", "collection_ids": [cid]},
         ).json()
         print(answer["answer"])
         for c in answer["citations"]:
@@ -47,7 +54,10 @@ def main() -> None:
         with client.stream(
             "POST",
             "/query",
-            json={"question": "What is the travel insurance policy number?", "collection_ids": [cid]},
+            json={
+                "question": "What is the travel insurance policy number?",
+                "collection_ids": [cid],
+            },
             headers={"accept": "text/event-stream"},
         ) as stream:
             event = ""
