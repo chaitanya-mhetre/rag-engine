@@ -1,0 +1,1013 @@
+{
+ "name": "kestrel_v1",
+ "corpus": "corpus/kestrel",
+ "description": "Hand-written questions over the fictional Kestrel Robotics corpus.",
+ "items": [
+  {
+   "id": "q001",
+   "question": "How many paid vacation days do full-time employees get per year?",
+   "expected_sources": [
+    {
+     "document": "leave-policy.md",
+     "section": "Vacation"
+    }
+   ],
+   "expected_answer": "22 days per calendar year.",
+   "answer_keywords": [
+    "22"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q002",
+   "question": "How many unused vacation days can be carried over to the next year?",
+   "expected_sources": [
+    {
+     "document": "leave-policy.md",
+     "section": "Vacation"
+    }
+   ],
+   "expected_answer": "Up to 5 days.",
+   "answer_keywords": [
+    "5"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q003",
+   "question": "How much paid sick leave do employees receive?",
+   "expected_sources": [
+    {
+     "document": "leave-policy.md",
+     "section": "Sick Leave"
+    }
+   ],
+   "expected_answer": "12 days per year.",
+   "answer_keywords": [
+    "12"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q004",
+   "question": "When is a medical certificate required for sick leave?",
+   "expected_sources": [
+    {
+     "document": "leave-policy.md",
+     "section": "Sick Leave"
+    }
+   ],
+   "expected_answer": "For sick leave longer than 3 consecutive days.",
+   "answer_keywords": [
+    "3"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q005",
+   "question": "How long is parental leave for the primary caregiver?",
+   "expected_sources": [
+    {
+     "document": "leave-policy.md",
+     "section": "Parental Leave"
+    }
+   ],
+   "expected_answer": "26 weeks fully paid.",
+   "answer_keywords": [
+    "26"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q006",
+   "question": "How many days of bereavement leave are given for an immediate family member?",
+   "expected_sources": [
+    {
+     "document": "leave-policy.md",
+     "section": "Bereavement"
+    }
+   ],
+   "expected_answer": "Up to 5 days.",
+   "answer_keywords": [
+    "5"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q007",
+   "question": "What is the daily meal allowance for international travel?",
+   "expected_sources": [
+    {
+     "document": "expense-policy.md",
+     "section": "Meals"
+    }
+   ],
+   "expected_answer": "USD 60 per day.",
+   "answer_keywords": [
+    "60"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q008",
+   "question": "Within how many days must expenses be submitted?",
+   "expected_sources": [
+    {
+     "document": "expense-policy.md",
+     "section": "Receipts"
+    }
+   ],
+   "expected_answer": "Within 30 days in Ledgerly.",
+   "answer_keywords": [
+    "30"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q009",
+   "question": "Up to what amount can a direct manager approve an expense claim?",
+   "expected_sources": [
+    {
+     "document": "expense-policy.md",
+     "section": "Approval"
+    }
+   ],
+   "expected_answer": "Up to INR 50,000.",
+   "answer_keywords": [
+    "50,000"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q010",
+   "question": "What is the mileage rate for using a personal car?",
+   "expected_sources": [
+    {
+     "document": "expense-policy.md",
+     "section": "Mileage"
+    }
+   ],
+   "expected_answer": "INR 12 per kilometre.",
+   "answer_keywords": [
+    "12"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q011",
+   "question": "Which travel class is required for flights shorter than 6 hours?",
+   "expected_sources": [
+    {
+     "document": "travel-policy.md",
+     "section": "Flights"
+    }
+   ],
+   "expected_answer": "Economy class.",
+   "answer_keywords": [
+    "economy"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q012",
+   "question": "What is the nightly hotel limit in metro cities?",
+   "expected_sources": [
+    {
+     "document": "travel-policy.md",
+     "section": "Hotels"
+    }
+   ],
+   "expected_answer": "INR 8,000 per night.",
+   "answer_keywords": [
+    "8,000"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q013",
+   "question": "How far in advance should visa applications start?",
+   "expected_sources": [
+    {
+     "document": "travel-policy.md",
+     "section": "Visas"
+    }
+   ],
+   "expected_answer": "At least 6 weeks before travel.",
+   "answer_keywords": [
+    "6 weeks"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q014",
+   "question": "What is the minimum password length?",
+   "expected_sources": [
+    {
+     "document": "security-policy.md",
+     "section": "Passwords"
+    }
+   ],
+   "expected_answer": "14 characters.",
+   "answer_keywords": [
+    "14"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q015",
+   "question": "After how many minutes of inactivity must laptops lock the screen?",
+   "expected_sources": [
+    {
+     "document": "security-policy.md",
+     "section": "Devices"
+    }
+   ],
+   "expected_answer": "5 minutes.",
+   "answer_keywords": [
+    "5"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q016",
+   "question": "How often do managers review their team's system access?",
+   "expected_sources": [
+    {
+     "document": "security-policy.md",
+     "section": "Access Reviews"
+    }
+   ],
+   "expected_answer": "Every quarter.",
+   "answer_keywords": [
+    "quarter"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q017",
+   "question": "How quickly must a SEV1 page be acknowledged?",
+   "expected_sources": [
+    {
+     "document": "oncall-runbook.md",
+     "section": "Severity"
+    }
+   ],
+   "expected_answer": "Within 5 minutes.",
+   "answer_keywords": [
+    "5 minutes"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q018",
+   "question": "How often are status updates posted during a SEV1 incident?",
+   "expected_sources": [
+    {
+     "document": "oncall-runbook.md",
+     "section": "Incident Command"
+    }
+   ],
+   "expected_answer": "Every 30 minutes.",
+   "answer_keywords": [
+    "30"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q019",
+   "question": "How many requests per minute can one API key make?",
+   "expected_sources": [
+    {
+     "document": "api-guide.md",
+     "section": "Rate Limits"
+    }
+   ],
+   "expected_answer": "600 requests per minute.",
+   "answer_keywords": [
+    "600"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q020",
+   "question": "What is the maximum page size for list endpoints?",
+   "expected_sources": [
+    {
+     "document": "api-guide.md",
+     "section": "Pagination"
+    }
+   ],
+   "expected_answer": "100 items.",
+   "answer_keywords": [
+    "100"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q021",
+   "question": "What is the health insurance sum insured?",
+   "expected_sources": [
+    {
+     "document": "benefits.html",
+     "section": "Health Insurance"
+    }
+   ],
+   "expected_answer": "INR 5 lakh per year.",
+   "answer_keywords": [
+    "5 lakh"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q022",
+   "question": "How much is the annual learning budget?",
+   "expected_sources": [
+    {
+     "document": "benefits.html",
+     "section": "Learning"
+    }
+   ],
+   "expected_answer": "INR 40,000 per year.",
+   "answer_keywords": [
+    "40,000"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q023",
+   "question": "What is the maximum payload of the KR-7?",
+   "expected_sources": [
+    {
+     "document": "product-faq.md",
+     "section": "Specifications"
+    }
+   ],
+   "expected_answer": "12 kg.",
+   "answer_keywords": [
+    "12"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q024",
+   "question": "How long does a KR-7 battery last?",
+   "expected_sources": [
+    {
+     "document": "product-faq.md",
+     "section": "Battery"
+    }
+   ],
+   "expected_answer": "About 9 hours.",
+   "answer_keywords": [
+    "9"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q025",
+   "question": "How long is the probation period?",
+   "expected_sources": [
+    {
+     "document": "onboarding.md",
+     "section": "Probation"
+    }
+   ],
+   "expected_answer": "6 months.",
+   "answer_keywords": [
+    "6 months"
+   ],
+   "type": "factual",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q026",
+   "question": "What does error code E-4471 mean?",
+   "expected_sources": [
+    {
+     "document": "oncall-runbook.md",
+     "section": "Error Codes"
+    }
+   ],
+   "expected_answer": "The upstream payment gateway timed out.",
+   "answer_keywords": [
+    "payment gateway"
+   ],
+   "type": "keyword",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q027",
+   "question": "What should I do about E-5102?",
+   "expected_sources": [
+    {
+     "document": "oncall-runbook.md",
+     "section": "Error Codes"
+    }
+   ],
+   "expected_answer": "Restart the sync worker from the admin console.",
+   "answer_keywords": [
+    "sync worker"
+   ],
+   "type": "keyword",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q028",
+   "question": "Is any server action needed for E-3009?",
+   "expected_sources": [
+    {
+     "document": "oncall-runbook.md",
+     "section": "Error Codes"
+    }
+   ],
+   "expected_answer": "No; the client should refresh its token.",
+   "answer_keywords": [
+    "refresh"
+   ],
+   "type": "keyword",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q029",
+   "question": "What does E-7710 indicate?",
+   "expected_sources": [
+    {
+     "document": "oncall-runbook.md",
+     "section": "Error Codes"
+    }
+   ],
+   "expected_answer": "The robot telemetry stream dropped.",
+   "answer_keywords": [
+    "telemetry"
+   ],
+   "type": "keyword",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q030",
+   "question": "What is the travel insurance policy number?",
+   "expected_sources": [
+    {
+     "document": "travel-policy.md",
+     "section": "Travel Insurance"
+    }
+   ],
+   "expected_answer": "KR-TRV-2291.",
+   "answer_keywords": [
+    "KR-TRV-2291"
+   ],
+   "type": "keyword",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q031",
+   "question": "Which header carries the webhook signature?",
+   "expected_sources": [
+    {
+     "document": "api-guide.md",
+     "section": "Webhooks"
+    }
+   ],
+   "expected_answer": "X-Kestrel-Signature.",
+   "answer_keywords": [
+    "X-Kestrel-Signature"
+   ],
+   "type": "keyword",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q032",
+   "question": "What prefix do live API keys use?",
+   "expected_sources": [
+    {
+     "document": "api-guide.md",
+     "section": "Authentication"
+    }
+   ],
+   "expected_answer": "kr_live_",
+   "answer_keywords": [
+    "kr_live_"
+   ],
+   "type": "keyword",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q033",
+   "question": "What is the security hotline extension?",
+   "expected_sources": [
+    {
+     "document": "security-policy.md",
+     "section": "Incident Reporting"
+    }
+   ],
+   "expected_answer": "Extension 4471.",
+   "answer_keywords": [
+    "4471"
+   ],
+   "type": "keyword",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q034",
+   "question": "Which system is used to request vacation?",
+   "expected_sources": [
+    {
+     "document": "leave-policy.md",
+     "section": "Vacation"
+    }
+   ],
+   "expected_answer": "The Tern HR system.",
+   "answer_keywords": [
+    "Tern"
+   ],
+   "type": "keyword",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q035",
+   "question": "What is the name of the paging app used for on-call?",
+   "expected_sources": [
+    {
+     "document": "oncall-runbook.md",
+     "section": "Severity"
+    }
+   ],
+   "expected_answer": "Beacon.",
+   "answer_keywords": [
+    "Beacon"
+   ],
+   "type": "keyword",
+   "answerable": true,
+   "difficulty": "easy"
+  },
+  {
+   "id": "q036",
+   "question": "If I'm the main person looking after a newborn, how much time off do I get?",
+   "expected_sources": [
+    {
+     "document": "leave-policy.md",
+     "section": "Parental Leave"
+    }
+   ],
+   "expected_answer": "26 weeks fully paid.",
+   "answer_keywords": [
+    "26"
+   ],
+   "type": "paraphrase",
+   "answerable": true,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q037",
+   "question": "Can I get my beer at a client dinner paid back?",
+   "expected_sources": [
+    {
+     "document": "expense-policy.md",
+     "section": "Meals"
+    }
+   ],
+   "expected_answer": "No, alcohol is never reimbursable.",
+   "answer_keywords": [
+    "alcohol"
+   ],
+   "type": "paraphrase",
+   "answerable": true,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q038",
+   "question": "Am I allowed to fly business class to a conference?",
+   "expected_sources": [
+    {
+     "document": "travel-policy.md",
+     "section": "Flights"
+    }
+   ],
+   "expected_answer": "Only with CEO approval.",
+   "answer_keywords": [
+    "CEO"
+   ],
+   "type": "paraphrase",
+   "answerable": true,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q039",
+   "question": "What happens if my work laptop gets stolen?",
+   "expected_sources": [
+    {
+     "document": "security-policy.md",
+     "section": "Devices"
+    }
+   ],
+   "expected_answer": "Report it within 1 hour.",
+   "answer_keywords": [
+    "1 hour"
+   ],
+   "type": "paraphrase",
+   "answerable": true,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q040",
+   "question": "Can the robot be used outside when it's raining?",
+   "expected_sources": [
+    {
+     "document": "product-faq.md",
+     "section": "Specifications"
+    }
+   ],
+   "expected_answer": "No; IP54 rating, not for outdoor use in rain.",
+   "answer_keywords": [
+    "rain"
+   ],
+   "type": "paraphrase",
+   "answerable": true,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q041",
+   "question": "How long until an empty robot is fully charged again?",
+   "expected_sources": [
+    {
+     "document": "product-faq.md",
+     "section": "Battery"
+    }
+   ],
+   "expected_answer": "2.5 hours on the standard dock.",
+   "answer_keywords": [
+    "2.5"
+   ],
+   "type": "paraphrase",
+   "answerable": true,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q042",
+   "question": "Which days of the week do I have to be in the office?",
+   "expected_sources": [
+    {
+     "document": "remote-work.txt"
+    }
+   ],
+   "expected_answer": "Tuesday, Wednesday and Thursday.",
+   "answer_keywords": [
+    "Tuesday"
+   ],
+   "type": "paraphrase",
+   "answerable": true,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q043",
+   "question": "Is there money for setting up a desk at home?",
+   "expected_sources": [
+    {
+     "document": "remote-work.txt"
+    }
+   ],
+   "expected_answer": "A one-time INR 25,000 home office stipend.",
+   "answer_keywords": [
+    "25,000"
+   ],
+   "type": "paraphrase",
+   "answerable": true,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q044",
+   "question": "If I send the same create-mission request twice, will I get two missions?",
+   "expected_sources": [
+    {
+     "document": "api-guide.md",
+     "section": "Idempotency"
+    }
+   ],
+   "expected_answer": "Not if the same Idempotency-Key is used within 24 hours.",
+   "answer_keywords": [
+    "Idempotency-Key"
+   ],
+   "type": "paraphrase",
+   "answerable": true,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q045",
+   "question": "Can my mum and dad be covered by my medical insurance?",
+   "expected_sources": [
+    {
+     "document": "benefits.html",
+     "section": "Health Insurance"
+    }
+   ],
+   "expected_answer": "Yes, with a 20% co-pay.",
+   "answer_keywords": [
+    "20%"
+   ],
+   "type": "paraphrase",
+   "answerable": true,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q046",
+   "question": "How many days of paid leave do I get in total per year counting vacation and sick leave?",
+   "expected_sources": [
+    {
+     "document": "leave-policy.md",
+     "section": "Vacation"
+    },
+    {
+     "document": "leave-policy.md",
+     "section": "Sick Leave"
+    }
+   ],
+   "expected_answer": "34 days (22 vacation + 12 sick).",
+   "answer_keywords": [
+    "22",
+    "12"
+   ],
+   "type": "multi_hop",
+   "answerable": true,
+   "difficulty": "hard"
+  },
+  {
+   "id": "q047",
+   "question": "For a 7-hour international flight, what class can I book and what is the hotel limit abroad?",
+   "expected_sources": [
+    {
+     "document": "travel-policy.md",
+     "section": "Flights"
+    },
+    {
+     "document": "travel-policy.md",
+     "section": "Hotels"
+    }
+   ],
+   "expected_answer": "Premium economy; USD 200 per night.",
+   "answer_keywords": [
+    "premium economy",
+    "200"
+   ],
+   "type": "multi_hop",
+   "answerable": true,
+   "difficulty": "hard"
+  },
+  {
+   "id": "q048",
+   "question": "What must a new engineer complete in their first week, and what password length is required?",
+   "expected_sources": [
+    {
+     "document": "onboarding.md",
+     "section": "Mandatory Training"
+    },
+    {
+     "document": "security-policy.md",
+     "section": "Passwords"
+    }
+   ],
+   "expected_answer": "Security awareness training within 7 days; 14-character passwords.",
+   "answer_keywords": [
+    "security",
+    "14"
+   ],
+   "type": "multi_hop",
+   "answerable": true,
+   "difficulty": "hard"
+  },
+  {
+   "id": "q049",
+   "question": "If an E-4471 incident is a SEV1, how fast must it be acknowledged and what is the first remediation step?",
+   "expected_sources": [
+    {
+     "document": "oncall-runbook.md",
+     "section": "Severity"
+    },
+    {
+     "document": "oncall-runbook.md",
+     "section": "Error Codes"
+    }
+   ],
+   "expected_answer": "Within 5 minutes; retry with backoff and check the gateway status page.",
+   "answer_keywords": [
+    "5 minutes",
+    "retry"
+   ],
+   "type": "multi_hop",
+   "answerable": true,
+   "difficulty": "hard"
+  },
+  {
+   "id": "q050",
+   "question": "What is the total yearly value of the wellness stipend plus the learning budget?",
+   "expected_sources": [
+    {
+     "document": "benefits.html",
+     "section": "Wellness"
+    },
+    {
+     "document": "benefits.html",
+     "section": "Learning"
+    }
+   ],
+   "expected_answer": "INR 64,000 (24,000 + 40,000).",
+   "answer_keywords": [
+    "2,000",
+    "40,000"
+   ],
+   "type": "multi_hop",
+   "answerable": true,
+   "difficulty": "hard"
+  },
+  {
+   "id": "q051",
+   "question": "How much can I claim for a hotel night in a non-metro city, and who approves a claim of INR 60,000?",
+   "expected_sources": [
+    {
+     "document": "travel-policy.md",
+     "section": "Hotels"
+    },
+    {
+     "document": "expense-policy.md",
+     "section": "Approval"
+    }
+   ],
+   "expected_answer": "INR 5,000; the Finance Director.",
+   "answer_keywords": [
+    "5,000",
+    "Finance Director"
+   ],
+   "type": "multi_hop",
+   "answerable": true,
+   "difficulty": "hard"
+  },
+  {
+   "id": "q052",
+   "question": "What is the company's policy on bringing pets to the office?",
+   "expected_sources": [],
+   "expected_answer": "Not in the documents; the system should refuse.",
+   "answer_keywords": [],
+   "type": "unanswerable",
+   "answerable": false,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q053",
+   "question": "How many employees does Kestrel Robotics have?",
+   "expected_sources": [],
+   "expected_answer": "Not in the documents; the system should refuse.",
+   "answer_keywords": [],
+   "type": "unanswerable",
+   "answerable": false,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q054",
+   "question": "What is the KR-7's price?",
+   "expected_sources": [],
+   "expected_answer": "Not in the documents; the system should refuse.",
+   "answer_keywords": [],
+   "type": "unanswerable",
+   "answerable": false,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q055",
+   "question": "What is the dental insurance coverage limit?",
+   "expected_sources": [],
+   "expected_answer": "Not in the documents; the system should refuse.",
+   "answer_keywords": [],
+   "type": "unanswerable",
+   "answerable": false,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q056",
+   "question": "Who is the CEO of Kestrel Robotics?",
+   "expected_sources": [],
+   "expected_answer": "Not in the documents; the system should refuse.",
+   "answer_keywords": [],
+   "type": "unanswerable",
+   "answerable": false,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q057",
+   "question": "What is the maximum speed of the KR-9 robot?",
+   "expected_sources": [],
+   "expected_answer": "Not in the documents; the system should refuse.",
+   "answer_keywords": [],
+   "type": "unanswerable",
+   "answerable": false,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q058",
+   "question": "How many days of sabbatical leave are offered after five years?",
+   "expected_sources": [],
+   "expected_answer": "Not in the documents; the system should refuse.",
+   "answer_keywords": [],
+   "type": "unanswerable",
+   "answerable": false,
+   "difficulty": "medium"
+  },
+  {
+   "id": "q059",
+   "question": "Is vacation unlimited at Kestrel?",
+   "expected_sources": [
+    {
+     "document": "leave-policy.md",
+     "section": "Vacation"
+    }
+   ],
+   "expected_answer": "No. Employees get 22 days of paid vacation per year.",
+   "answer_keywords": [
+    "22"
+   ],
+   "type": "adversarial",
+   "answerable": true,
+   "difficulty": "hard",
+   "forbidden_keywords": [
+    "unlimited vacation",
+    "vacation is unlimited"
+   ]
+  },
+  {
+   "id": "q060",
+   "question": "Are expenses approved automatically without receipts?",
+   "expected_sources": [
+    {
+     "document": "expense-policy.md",
+     "section": "Receipts"
+    }
+   ],
+   "expected_answer": "No. Itemised receipts are required above INR 500.",
+   "answer_keywords": [
+    "500"
+   ],
+   "type": "adversarial",
+   "answerable": true,
+   "difficulty": "hard",
+   "forbidden_keywords": [
+    "approved automatically"
+   ]
+  }
+ ]
+}
