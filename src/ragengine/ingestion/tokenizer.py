@@ -33,7 +33,7 @@ class RegexTokenizer:
 
 class TiktokenTokenizer:  # pragma: no cover - optional dependency, needs network on first use
     def __init__(self, encoding: str = "cl100k_base") -> None:
-        import tiktoken  # type: ignore[import-not-found]
+        import tiktoken  # type: ignore[import-not-found, unused-ignore]
 
         self._enc = tiktoken.get_encoding(encoding)
 

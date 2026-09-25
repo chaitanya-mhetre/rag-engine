@@ -48,6 +48,11 @@ dev = [
 rag = "ragengine.cli:main"
 rag-eval = "ragengine.evaluation.cli:main"
 
+[project.optional-dependencies]
+llamaindex = [
+    "llama-index-core>=0.14.25",
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
