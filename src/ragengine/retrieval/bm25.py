@@ -15,23 +15,33 @@ from collections.abc import Sequence
 
 from ragengine.embeddings import STOPWORDS
 from ragengine.ingestion.tokenizer import words
+from ragengine.retrieval.analysis import Analyzer
 
 
 def analyze(text: str) -> list[str]:
-    """Lower-case word tokens without stopwords. No stemming: "refunds" ≠ "refund" (a known
-    limitation; Postgres FTS with the english stemmer is the comparison point)."""
+    """Lower-case word tokens without stopwords, no stemming. Shared by the lexical reranker,
+    the fake LLM and the lexical judge. BM25 itself uses a configurable `Analyzer` (whose
+    default is identical to this function), so stemming can be evaluated in isolation."""
     return [w for w in words(text) if w not in STOPWORDS]
 
 
 class BM25Index:
-    def __init__(self, texts: Sequence[str], k1: float = 1.5, b: float = 0.75) -> None:
+    def __init__(
+        self,
+        texts: Sequence[str],
+        k1: float = 1.5,
+        b: float = 0.75,
+        analyzer: Analyzer | None = None,
+    ) -> None:
         if k1 < 0 or not 0 <= b <= 1:
             raise ValueError("k1 must be >= 0 and 0 <= b <= 1")
         self.k1, self.b = k1, b
+        # The same analyzer must process documents and queries, or stems never match.
+        self.analyzer = analyzer or Analyzer()
         self.postings: dict[str, dict[int, int]] = defaultdict(dict)
         self.doc_len: list[int] = []
         for i, text in enumerate(texts):
-            tokens = analyze(text)
+            tokens = self.analyzer(text)
             self.doc_len.append(len(tokens))
             for term, tf in Counter(tokens).items():
                 self.postings[term][i] = tf
@@ -46,7 +56,7 @@ class BM25Index:
         """Only documents containing at least one query term get a score (that's the point of
         an inverted index: we never touch documents that can't match)."""
         out: dict[int, float] = defaultdict(float)
-        for term in set(analyze(query)):
+        for term in set(self.analyzer(query)):
             postings = self.postings.get(term)
             if not postings:
                 continue

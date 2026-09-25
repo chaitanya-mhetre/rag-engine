@@ -30,6 +30,11 @@ def _run(args: argparse.Namespace) -> int:
         configs = [replace(c, reranker=args.reranker) for c in configs]
     if args.generate:
         configs = [replace(c, generate=True) for c in configs]
+    if args.bm25_stemmer != "none" or args.bm25_no_stopwords:
+        configs = [
+            replace(c, bm25_stemmer=args.bm25_stemmer, bm25_stopwords=not args.bm25_no_stopwords)
+            for c in configs
+        ]
     sizes = [int(s) for s in args.chunk_sizes.split(",")] if args.chunk_sizes else []
     configs = expand_chunk_ablation(configs, sizes)
 
@@ -108,6 +113,15 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--chunk-sizes", default="", help="comma list, e.g. 128,256,512")
     run.add_argument("--reranker", default="", help="none | lexical | cross-encoder[:model]")
     run.add_argument("--generate", action="store_true", help="also run answer generation")
+    run.add_argument(
+        "--bm25-stemmer",
+        choices=["none", "light", "snowball"],
+        default="none",
+        help="stemmer for the hand BM25 retriever (applies to every config)",
+    )
+    run.add_argument(
+        "--bm25-no-stopwords", action="store_true", help="keep stopwords in the BM25 index"
+    )
     run.add_argument("--out", default="", help="directory for JSON + Markdown reports")
     run.add_argument("--name", default=None, help="report file stem")
     run.add_argument("--label", default="")

@@ -30,7 +30,7 @@ def make_generation_hook(
 
     async def hook(corpus: LocalCorpus, cfg: RunConfig, item: EvalItem, k: int) -> dict[str, Any]:
         retriever = HybridRetriever(
-            BM25Retriever(corpus.store),
+            BM25Retriever(corpus.store, analyzer=cfg.analyzer()),
             VectorRetriever(corpus.store, corpus.indexer.embedder),
             make_reranker(cfg.reranker),
         )

@@ -17,6 +17,7 @@ from uuid import UUID
 
 from ragengine.embeddings import Embedder
 from ragengine.models import Chunk, ScoredChunk
+from ragengine.retrieval.analysis import Analyzer
 from ragengine.retrieval.bm25 import BM25Index
 from ragengine.retrieval.fusion import rrf, weighted
 from ragengine.retrieval.rerank import NoopReranker, Reranker
@@ -39,8 +40,15 @@ class BM25Retriever:
 
     name = "bm25"
 
-    def __init__(self, store: Store, k1: float = 1.5, b: float = 0.75) -> None:
+    def __init__(
+        self,
+        store: Store,
+        k1: float = 1.5,
+        b: float = 0.75,
+        analyzer: Analyzer | None = None,
+    ) -> None:
         self.store, self.k1, self.b = store, k1, b
+        self.analyzer = analyzer or Analyzer()
         self._cache: dict[SearchFilter, tuple[int, BM25Index, list[Chunk]]] = {}
 
     async def _index(self, flt: SearchFilter) -> tuple[BM25Index, list[Chunk]]:
@@ -49,7 +57,7 @@ class BM25Retriever:
         if generation is not None and cached and cached[0] == generation:
             return cached[1], cached[2]
         chunks = await self.store.active_chunks(flt)
-        index = BM25Index([c.text for c in chunks], self.k1, self.b)
+        index = BM25Index([c.text for c in chunks], self.k1, self.b, self.analyzer)
         if generation is not None:
             self._cache[flt] = (generation, index, chunks)
         return index, chunks

@@ -16,6 +16,7 @@ from ragengine.jobs import ArqQueue, InlineQueue, JobQueue
 from ragengine.observability import MetricsSink
 from ragengine.pipeline import RAGPipeline
 from ragengine.ratelimit import MemoryRateLimiter, RateLimiter, RedisRateLimiter
+from ragengine.retrieval.analysis import Analyzer
 from ragengine.retrieval.retrievers import (
     BM25Retriever,
     HybridRetriever,
@@ -74,7 +75,12 @@ def build_container(settings: Settings) -> Container:
         ),
     )
     keyword: KeywordRetriever = (
-        PgFtsRetriever(store) if settings.keyword_retriever == "pg_fts" else BM25Retriever(store)
+        PgFtsRetriever(store)
+        if settings.keyword_retriever == "pg_fts"
+        else BM25Retriever(
+            store,
+            analyzer=Analyzer(stopwords=settings.bm25_stopwords, stemmer=settings.bm25_stemmer),
+        )
     )
     retriever = HybridRetriever(
         keyword,

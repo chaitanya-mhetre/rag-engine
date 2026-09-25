@@ -19,6 +19,7 @@ from ragengine.embeddings import Embedder, HashingEmbedder
 from ragengine.evaluation.dataset import EvalItem, load_dataset
 from ragengine.evaluation.metrics import mean, percentile, score_retrieval
 from ragengine.local import LocalCorpus, index_folder
+from ragengine.retrieval.analysis import Analyzer, StemmerName
 from ragengine.retrieval.rerank import LexicalReranker, NoopReranker, Reranker
 from ragengine.retrieval.retrievers import (
     BM25Retriever,
@@ -48,6 +49,11 @@ class RunConfig:
     alpha: float = 0.5
     reranker: str = "lexical"
     generate: bool = False  # run the answer pipeline too (generation metrics)
+    bm25_stemmer: StemmerName = "none"
+    bm25_stopwords: bool = True
+
+    def analyzer(self) -> Analyzer:
+        return Analyzer(stopwords=self.bm25_stopwords, stemmer=self.bm25_stemmer)
 
     def retrieval(self, k: int) -> RetrievalConfig:
         return RetrievalConfig(
@@ -145,7 +151,7 @@ class EvalRunner:
     async def run_config(self, cfg: RunConfig) -> dict[str, Any]:
         corpus = await self.corpus(cfg)
         retriever = HybridRetriever(
-            BM25Retriever(corpus.store),
+            BM25Retriever(corpus.store, analyzer=cfg.analyzer()),
             VectorRetriever(corpus.store, corpus.indexer.embedder),
             make_reranker(cfg.reranker),
         )

@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     rate_limit_capacity: int = 60  # burst size per user
     rate_limit_per_second: float = 1.0  # sustained queries per second per user
     keyword_retriever: Literal["bm25", "pg_fts"] = "bm25"
+    # BM25 text analysis (hand BM25 only; Postgres FTS always uses the "english" config).
+    # Defaults are decided by `evaluation/reports/bm25_stemming.md`: change them only with an
+    # eval run that shows an improvement.
+    bm25_stemmer: Literal["none", "light", "snowball"] = "none"
+    bm25_stopwords: bool = True
 
     # Cost table file
     models_config: str = "config/models.json"
