@@ -136,3 +136,28 @@ def test_cli_run_and_compare(tmp_path: Path, capsys: pytest.CaptureFixture[str])
     )
     assert eval_main(["run", str(ds), "--configs", "nope"]) == 2
     assert "recall@5" in capsys.readouterr().out
+
+
+async def test_generation_eval_end_to_end(tmp_path: Path) -> None:
+    from dataclasses import replace
+
+    from ragengine.evaluation.generation import make_generation_hook
+    from ragengine.generation.llm import FakeExtractiveLLM
+
+    runner = EvalRunner(
+        write_dataset(tmp_path), k=2, generation_hook=make_generation_hook(FakeExtractiveLLM())
+    )
+    report = await runner.run([replace(PRESETS["hybrid_rrf_rerank"], generate=True)])
+    run = report["runs"][0]
+    assert len(run["items"]) == 3  # unanswerable items are included when generating
+    gen = run["generation"]
+    assert gen["false_refusal_rate"] == 0.0
+    assert gen["refusal_accuracy"] == 1.0  # "who is the ceo" is declined
+    assert gen["invalid_citation_rate"] == 0.0
+    assert gen["model"] == "fake-extractive-v1"
+
+
+def test_cli_generate_flag(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    ds = write_dataset(tmp_path)
+    assert eval_main(["run", str(ds), "--configs", "hybrid_rrf_rerank", "--generate"]) == 0
+    assert "## Generation" in capsys.readouterr().out

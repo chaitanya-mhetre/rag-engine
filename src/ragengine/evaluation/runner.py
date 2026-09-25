@@ -212,6 +212,10 @@ class EvalRunner:
             },
             "items": [asdict(r) for r in results],
         }
+        if cfg.generate and self.generation_hook is not None:
+            from ragengine.evaluation.generation_metrics import summarise_generation
+
+            summary["generation"] = summarise_generation(results, self.dataset)
         return summary
 
     async def run(self, configs: list[RunConfig], label: str = "") -> dict[str, Any]:

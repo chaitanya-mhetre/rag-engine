@@ -28,10 +28,17 @@ def _run(args: argparse.Namespace) -> int:
     configs = [PRESETS[n] for n in names]
     if args.reranker:
         configs = [replace(c, reranker=args.reranker) for c in configs]
+    if args.generate:
+        configs = [replace(c, generate=True) for c in configs]
     sizes = [int(s) for s in args.chunk_sizes.split(",")] if args.chunk_sizes else []
     configs = expand_chunk_ablation(configs, sizes)
 
-    runner = EvalRunner(args.dataset, k=args.k)
+    hook = None
+    if args.generate:
+        from ragengine.evaluation.generation import make_generation_hook
+
+        hook = make_generation_hook()
+    runner = EvalRunner(args.dataset, k=args.k, generation_hook=hook)
     report = asyncio.run(runner.run(configs, label=args.label))
     if args.out:
         path = write_report(report, args.out, args.name)
@@ -61,6 +68,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--k", type=int, default=5)
     run.add_argument("--chunk-sizes", default="", help="comma list, e.g. 128,256,512")
     run.add_argument("--reranker", default="", help="none | lexical | cross-encoder[:model]")
+    run.add_argument("--generate", action="store_true", help="also run answer generation")
     run.add_argument("--out", default="", help="directory for JSON + Markdown reports")
     run.add_argument("--name", default=None, help="report file stem")
     run.add_argument("--label", default="")
