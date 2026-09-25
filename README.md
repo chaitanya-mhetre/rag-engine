@@ -113,16 +113,23 @@ Send `Accept: text/event-stream` to stream. The full endpoint list is at `/docs`
 > (which can't match synonyms), the lexical reranker heuristic and an extractive fake LLM. They show the harness
 > works and allow regression checks. **Real-model numbers are TBD.**
 
-Retrieval, `kestrel_v1` (53 answerable items), k = 5, from
-[`evaluation/reports/m4_retrieval_baseline.md`](evaluation/reports/m4_retrieval_baseline.md):
+Retrieval, `kestrel_v1` (53 answerable items), k = 5, current defaults (light BM25 stemming), from
+[`evaluation/reports/bm25_stemming_light.md`](evaluation/reports/bm25_stemming_light.md):
 
 | config | hit@5 | precision@5 | recall@5 | MRR |
 |---|---|---|---|---|
-| keyword (BM25) | 0.943 | 0.204 | 0.924 | 0.844 |
+| keyword (BM25, light stemming) | 0.981 | 0.215 | 0.972 | 0.921 |
 | vector (hashing embedder) | 0.830 | 0.174 | 0.792 | 0.736 |
-| hybrid RRF | 0.906 | 0.193 | 0.877 | 0.825 |
-| hybrid weighted | 0.868 | 0.185 | 0.840 | 0.816 |
-| hybrid RRF + lexical rerank | **0.962** | **0.204** | **0.934** | **0.884** |
+| hybrid RRF | 0.943 | 0.200 | 0.915 | 0.850 |
+| hybrid weighted | 0.962 | 0.207 | 0.943 | 0.866 |
+| hybrid RRF + lexical rerank | **0.981** | **0.207** | **0.953** | **0.893** |
+
+BM25 stemming was measured before/after in
+[`evaluation/reports/bm25_stemming.md`](evaluation/reports/bm25_stemming.md): the hand-written `light` stemmer
+improved every BM25-based config with no per-item regressions (e.g. keyword recall@5 0.924 → 0.972, MRR 0.844 →
+0.921; default pipeline recall@5 0.934 → 0.953), so it's the default. Snowball scored similarly but regressed one
+question. The earlier M4 baseline (no stemming) is kept in
+[`m4_retrieval_baseline.md`](evaluation/reports/m4_retrieval_baseline.md).
 
 Generation, from [`evaluation/reports/m7_generation_judged.md`](evaluation/reports/m7_generation_judged.md),
 hybrid RRF + rerank:
@@ -137,9 +144,9 @@ Faithfulness shows 1.0, but that's **trivially true** for an *extractive* fake L
 don't read it as a result. The judge spot-check sheet (`m7_spot_check_TODO.md`) hasn't been hand-labelled yet, so
 judge agreement is **TBD**.
 
-What the error analysis shows (worst-items section of each report): without stemming, "password" doesn't match
-"Passwords" (q014), and paraphrases like "beer" → "alcohol" (q037) are misses that only a semantic embedding model can
-fix. Those are the next experiments.
+What the error analysis shows (worst-items section of each report): stemming fixed "password" vs "Passwords"
+(q014); paraphrases like "beer" → "alcohol" (q037) are misses that only a semantic embedding model can fix. That's
+the next experiment.
 
 ## Testing
 ```bash
@@ -193,7 +200,7 @@ make eval-check   # re-runs retrieval eval, fails if any metric drops > 0.02 vs 
 
 ## Limitations
 - No OCR (text-layer PDFs only).
-- No stemming in hand BM25.
+- Hand BM25 stemming is English-only and rule-based (`light`); Snowball is optional. No lemmatisation.
 - The lexical reranker and judge are heuristics.
 - Real-model evaluation numbers are TBD.
 - The spot-check agreement isn't measured yet.
@@ -201,7 +208,6 @@ make eval-check   # re-runs retrieval eval, fails if any metric drops > 0.02 vs 
 
 ## Roadmap
 - Evaluate with a real embedding model and cross-encoder, then fill in the TBD numbers.
-- Light stemming for BM25, measured before and after.
 - Hand-label the judge spot-check sheet.
 - OpenTelemetry spans.
 - Refresh-token rotation and a denylist.

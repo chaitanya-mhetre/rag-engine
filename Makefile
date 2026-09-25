@@ -19,6 +19,6 @@ migrate:
 	uv run alembic upgrade head
 eval-check:
 	uv run rag-eval run evaluation/datasets/kestrel_v1.json --configs keyword,vector,hybrid_rrf,hybrid_weighted,hybrid_rrf_rerank --out /tmp/rag-eval --name current > /dev/null
-	uv run rag-eval compare evaluation/reports/m4_retrieval_baseline.json /tmp/rag-eval/current.json --fail-on-regression 0.02
+	uv run rag-eval compare evaluation/reports/bm25_stemming_light.json /tmp/rag-eval/current.json --fail-on-regression 0.02
 serve:
 	uv run uvicorn ragengine.api.app:create_app --factory --reload --port 8000

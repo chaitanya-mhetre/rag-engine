@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+### Added
+- Configurable BM25 analyzer (`retrieval/analysis.py`): hand-written `light` stemmer and optional Snowball
+  (`RAG_BM25_STEMMER=none|light|snowball`, `RAG_BM25_STOPWORDS`), plus `rag-eval run --bm25-stemmer` and
+  `--bm25-no-stopwords` (#2).
+
+### Changed
+- `light` stemming is now the BM25 default: it improved every BM25-based config with no per-item regressions in the
+  offline eval (`evaluation/reports/bm25_stemming.md`). The CI eval gate compares against the new report.
+
+### Fixed
+- Fused-score ties were broken by random chunk UUIDs, so repeated eval runs differed slightly; ties now break on
+  (source, ordinal, id).
+
 ## 0.1.0 (M1–M8)
 - **M1:** parsers (txt/md/html/pdf/docx) with heading paths and mime sniffing; recursive and token-window chunkers;
   `rag ingest`.

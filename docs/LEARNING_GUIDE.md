@@ -78,7 +78,20 @@ return (or stream) the answer.
 - **k1** (≈1.2–2): term-frequency saturation. The 10th occurrence adds little.
 - **b** (0–1): length normalisation. `b=0` ignores length. See `test_bm25_length_normalisation`.
 - **Inverted index:** term → {doc: tf}, so scoring touches only documents that contain the query terms.
-- **Our limitation:** no stemming. The error report shows "password" ≠ "Passwords" (q014).
+- **Analysis** (`retrieval/analysis.py`): BM25 only matches identical terms, so text goes through an `Analyzer`
+  first: lower-case → drop stopwords → stem. The *same* analyzer must process documents and queries.
+- **Stopwords** ("the", "is", …) carry almost no signal and have tiny IDF anyway; removing them shrinks the index and
+  stops "what is the" from matching everything.
+- **Stemming** maps inflected forms to one stem ("Passwords" → "password"), which raises recall. The cost is
+  **over-stemming**: unrelated words collapse together ("university"/"universe" → "univers" with Snowball), which
+  lowers precision. `light` only strips plurals and -ing/-ed; Snowball (Porter2) also strips derivations
+  ("reimbursement" → "reimburs").
+- **How the default was chosen:** `evaluation/reports/bm25_stemming.md`. Both stemmers fixed q014; Snowball
+  regressed q036. So `light` won: every BM25 config improved and no item got worse. That's the "measure, don't
+  guess" loop.
+- **Stemming vs lemmatisation:** a lemmatiser uses a dictionary + part of speech ("better" → "good"). It's more
+  accurate but slower and language-resource heavy. Postgres FTS's `english` config is a Snowball stemmer, not a
+  lemmatiser.
 
 ### Embeddings and vector search (`embeddings.py`, `store/pg.py`)
 - Cosine similarity compares direction. We L2-normalise vectors so cosine equals the dot product.
@@ -137,8 +150,8 @@ return (or stream) the answer.
 ## 4. Experiments to do yourself (this is how you really learn it)
 1. `--chunk-sizes 128,256,512`: which size wins recall@5? Why do multi-hop items change?
 2. Set `RAG_RERANKER=none` and compare `hybrid_rrf` against `hybrid_rrf_rerank` in a report.
-3. Add plural stemming to `bm25.analyze` (strip a trailing "s"), run `make eval-check`, and check whether q014 gets
-   fixed and whether anything regresses.
+3. Re-run the stemming comparison (`rag-eval run ... --bm25-stemmer none|light|snowball`) and read the per-item
+   diff. Then add one rule to `LightStemmer` (e.g. `-ly`), measure again, and keep it only if nothing regresses.
 4. Change `rrf_k` to 1 and to 200: what happens to MRR?
 5. Plug in a real embedder (`RAG_EMBEDDING_PROVIDER=local`, with `uv add sentence-transformers`) and fill in the TBD
    numbers.
@@ -196,13 +209,23 @@ return (or stream) the answer.
     avoids a timing side channel.
 22. **Why can't a refresh token be used as an access token?** Tokens carry `typ`, and `decode()` checks the expected
     type. Tests cover it.
-23. **What's a limitation you'd fix next?** Real-model evaluation, BM25 stemming, refresh-token revocation, and OCR
-    for scanned PDFs.
+23. **What's a limitation you'd fix next?** Real-model evaluation, refresh-token revocation, and OCR for scanned
+    PDFs. (BM25 stemming was the previous one; see Q26.)
 24. **How do you prevent regressions in retrieval quality?** CI re-runs the deterministic eval and compares against
     the committed baseline with a 0.02 threshold.
 25. **Tell me about a bug you found.** The Docker smoke test showed uploads failing with a permission error, and
     worse, leaving document rows without files. I made the file write come first and added a contract test that
     runs on both stores.
+26. **How did you decide whether to add stemming?** I made the analyzer configurable, ran the same eval with
+    none/light/Snowball, and compared per item, not just averages. Light improved every BM25 config with zero
+    regressions; Snowball regressed one paraphrase question. So light became the default and the CI gate moved to
+    the new baseline.
+27. **Stemming vs lemmatisation, and what's over-stemming?** Stemming chops suffixes by rule; lemmatisation maps to
+    the dictionary form using part of speech. Over-stemming merges unrelated words ("universe"/"university"), which
+    hurts precision; under-stemming leaves related forms apart, which hurts recall.
+28. **Your eval numbers changed between two runs of the same code. What do you do?** Treat it as a bug before
+    trusting any comparison. Here, fused-score ties were broken by random UUIDs; breaking ties on (source,
+    ordinal, id) made runs reproducible, and a test pins it.
 
 ## 6. How to talk about how this was built
 This repo was implemented with AI assistance, and I studied it using this guide. In interviews, speak from what
