@@ -1,4 +1,4 @@
-.PHONY: check lint type test test-all fmt up down eval
+.PHONY: check lint type test fmt up down eval migrate
 check: lint type test
 lint:
 	uv run ruff check .
@@ -15,3 +15,5 @@ down:
 	docker compose down
 eval:
 	uv run rag-eval run evaluation/datasets/handbook_v1.json --out evaluation/reports
+migrate:
+	uv run alembic upgrade head

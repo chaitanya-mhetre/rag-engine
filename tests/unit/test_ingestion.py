@@ -21,3 +21,11 @@ def test_cli_ingest(tmp_path, capsys) -> None:  # type: ignore[no-untyped-def]
     f.write_text("# Title\n\nHello world.")
     assert main(["ingest", str(f)]) == 0
     assert "1 chunks" in capsys.readouterr().out
+
+
+def test_cli_search(tmp_path, capsys) -> None:  # type: ignore[no-untyped-def]
+    (tmp_path / "a.md").write_text("# Leave\n\nEmployees get 20 vacation days.")
+    (tmp_path / "b.md").write_text("# API\n\nTokens are JWTs.")
+    assert main(["search", "vacation days", "--corpus", str(tmp_path), "-k", "1"]) == 0
+    out = capsys.readouterr().out
+    assert "a.md" in out and "b.md" not in out
