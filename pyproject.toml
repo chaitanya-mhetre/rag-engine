@@ -1,0 +1,63 @@
+[project]
+name = "ragengine"
+version = "0.1.0"
+description = "Multi-tenant RAG backend: hybrid retrieval, reranking, cited answers, and an evaluation harness"
+readme = "README.md"
+authors = [
+    { name = "Chaitanya Mhetre", email = "mhetrechaitanya06@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.15.0",
+    "httpx>=0.28.1",
+    "markdown-it-py>=4.2.0",
+    "numpy>=2.5.3",
+    "pydantic>=2.13.5",
+    "pydantic-settings>=2.15.0",
+    "pypdf>=6.19.0",
+    "python-docx>=1.2.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.6,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.168.1",
+    "mypy>=2.3.1",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.16.9",
+]
+
+[project.scripts]
+rag = "ragengine.cli:main"
+rag-eval = "ragengine.evaluation.cli:main"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "N", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.mypy]
+strict = true
+files = ["src", "tests"]
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["docx.*", "pgvector.*", "arq.*", "sentence_transformers.*", "llama_index.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "integration: needs Postgres + Redis from docker compose",
+    "live: calls a real LLM/embedding provider (never in CI)",
+]
+addopts = "-m 'not live'"
