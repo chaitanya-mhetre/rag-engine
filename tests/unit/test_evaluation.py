@@ -161,3 +161,43 @@ def test_cli_generate_flag(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -
     ds = write_dataset(tmp_path)
     assert eval_main(["run", str(ds), "--configs", "hybrid_rrf_rerank", "--generate"]) == 0
     assert "## Generation" in capsys.readouterr().out
+
+
+async def test_lexical_judge() -> None:
+    from ragengine.evaluation.judge import LexicalJudge, claims
+
+    judge = LexicalJudge()
+    ctx = ["Employees get 22 vacation days per year."]
+    good = await judge.judge("how many vacation days", "Employees get 22 vacation days [S1].", ctx)
+    assert good.faithfulness == 1.0 and good.answer_relevance == pytest.approx(2 / 3, abs=1e-3)
+    bad = await judge.judge(
+        "how many vacation days", "Vacation is unlimited for managers in Paris [S1].", ctx
+    )
+    assert bad.faithfulness == 0.0 and bad.unsupported_claims
+    refused = await judge.judge("how many vacation days", None, ctx)
+    assert refused.faithfulness is None and refused.context_relevance > 0
+    assert claims("One two three [S1]. Ok.") == ["One two three ."]
+
+
+def test_spot_check(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    ds = write_dataset(tmp_path)
+    out = tmp_path / "r"
+    eval_main(
+        [
+            "run",
+            str(ds),
+            "--configs",
+            "hybrid_rrf_rerank",
+            "--generate",
+            "--out",
+            str(out),
+            "--name",
+            "g",
+        ]
+    )
+    assert (
+        eval_main(["spot-check", str(out / "g.json"), "--n", "2", "--out", str(tmp_path / "s.md")])
+        == 0
+    )
+    text = (tmp_path / "s.md").read_text()
+    assert text.count("- [ ] I agree with the faithfulness score") == 2

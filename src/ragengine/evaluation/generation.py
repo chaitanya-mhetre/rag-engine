@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from ragengine.evaluation.dataset import EvalItem
+from ragengine.evaluation.judge import Judge, LexicalJudge
 from ragengine.evaluation.runner import GenerationHook, RunConfig, make_reranker
 from ragengine.factory import build_llm
 from ragengine.generation.context import ContextBuilder
@@ -21,8 +22,10 @@ def make_generation_hook(
     refusal_threshold: float = 0.2,
     prices: PriceTable | None = None,
     token_budget: int = 1500,
+    judge: Judge | None = None,
 ) -> GenerationHook:
     model = llm or build_llm()
+    judge_impl: Judge = judge or LexicalJudge()
     price_table = prices or PriceTable.load("config/models.json")
 
     async def hook(corpus: LocalCorpus, cfg: RunConfig, item: EvalItem, k: int) -> dict[str, Any]:
@@ -42,7 +45,17 @@ def make_generation_hook(
         chunks = {b.chunk.id: b.chunk for b in result.context.blocks}
         cited = [chunks[c.chunk_id] for c in result.answer.citations if c.chunk_id in chunks]
         text = result.answer.answer.lower()
+        verdict = await judge_impl.judge(
+            item.question,
+            None if result.answer.insufficient_context else result.answer.answer,
+            [b.text for b in result.context.blocks],
+        )
         return {
+            "faithfulness": verdict.faithfulness,
+            "answer_relevance": verdict.answer_relevance,
+            "context_relevance": verdict.context_relevance,
+            "unsupported_claims": list(verdict.unsupported_claims),
+            "judge": judge_impl.name,
             "answer": result.answer.answer,
             "refused": result.answer.insufficient_context,
             "refusal_reason": result.answer.refusal_reason,

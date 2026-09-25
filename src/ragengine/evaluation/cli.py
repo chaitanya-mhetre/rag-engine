@@ -58,6 +58,45 @@ def _compare(args: argparse.Namespace) -> int:
     return 0
 
 
+def _spot_check(args: argparse.Namespace) -> int:
+    """Sample judged items into a Markdown checklist for hand-labelling (judge agreement)."""
+    import random
+
+    report = json.loads(Path(args.report).read_text())
+    rows = [
+        (run["name"], item)
+        for run in report["runs"]
+        for item in run["items"]
+        if item.get("generation", {}).get("faithfulness") is not None
+    ]
+    rng = random.Random(args.seed)
+    sample = rng.sample(rows, min(args.n, len(rows)))
+    lines = [
+        f"# Judge spot-check ({len(sample)} items, seed {args.seed})",
+        "",
+        "For each item, tick whether YOU agree with the judge. Agreement rate = ticks / items.",
+        "",
+    ]
+    for name, item in sample:
+        gen = item["generation"]
+        lines += [
+            f"## {item['id']} ({name}): {item['question']}",
+            f"- answer: {gen['answer']}",
+            f"- judge `{gen.get('judge')}`: faithfulness={gen['faithfulness']}, "
+            f"answer_relevance={gen['answer_relevance']}, unsupported={gen['unsupported_claims']}",
+            "- [ ] I agree with the faithfulness score",
+            "- [ ] I agree with the relevance score",
+            "",
+        ]
+    output = "\n".join(lines) + "\n"
+    if args.out:
+        Path(args.out).write_text(output)
+        print(f"wrote {args.out}")
+    else:
+        print(output)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="rag-eval", description="RAG evaluation harness")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -80,6 +119,13 @@ def build_parser() -> argparse.ArgumentParser:
     cmp_.add_argument("b")
     cmp_.add_argument("--fail-on-regression", type=float, default=None)
     cmp_.set_defaults(func=_compare)
+
+    spot = sub.add_parser("spot-check", help="sample judged items for hand-labelling")
+    spot.add_argument("report")
+    spot.add_argument("--n", type=int, default=20)
+    spot.add_argument("--seed", type=int, default=7)
+    spot.add_argument("--out", default="")
+    spot.set_defaults(func=_spot_check)
     return parser
 
 

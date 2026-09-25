@@ -10,7 +10,10 @@
 - adversarial_resistance: adversarial items whose answer contains none of the forbidden phrases
 - tokens / cost / latency per query
 
-LLM-judge metrics (faithfulness, answer relevance, context relevance) are in `judge.py`.
+Judged metrics (see `judge.py`; the judge name is recorded with them):
+- faithfulness: mean share of answer claims supported by the context (answered items)
+- answer_relevance: mean judged relevance of the answer to the question (answered items)
+- context_relevance: mean judged relevance of the retrieved context (all items)
 """
 
 from __future__ import annotations
@@ -61,5 +64,15 @@ def summarise_generation(results: list[Any], dataset: Dataset) -> dict[str, Any]
         ),
         "llm_p50_ms": percentile(llm_ms, 50),
         "llm_p95_ms": percentile(llm_ms, 95),
+        "faithfulness": mean(
+            [g["faithfulness"] for g in answered if g.get("faithfulness") is not None]
+        ),
+        "answer_relevance": mean(
+            [g["answer_relevance"] for g in answered if g.get("answer_relevance") is not None]
+        ),
+        "context_relevance": mean(
+            [g["context_relevance"] for g in gens if "context_relevance" in g]
+        ),
+        "judge": gens[0].get("judge") if gens else None,
         "model": gens[0]["model"] if gens else None,
     }
