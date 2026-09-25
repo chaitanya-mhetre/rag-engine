@@ -1,0 +1,41 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env: {POSTGRES_USER: rag, POSTGRES_PASSWORD: rag, POSTGRES_DB: rag}
+        ports: ["55433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U rag" --health-interval 2s --health-retries 30
+      redis:
+        image: redis:7-alpine
+        ports: ["56380:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 2s --health-retries 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen --extra llamaindex
+      - name: lint
+        run: uv run ruff check . && uv run ruff format --check .
+      - name: types
+        run: uv run mypy
+      - name: migrate
+        run: uv run alembic upgrade head
+      - name: tests (unit + integration)
+        run: uv run pytest -q
+      - name: eval regression gate (offline, deterministic)
+        run: make eval-check
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t rag-engine:ci .

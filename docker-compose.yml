@@ -23,30 +23,38 @@ services:
 
   api:
     build: .
+    image: rag-engine-api
     profiles: [app]
-    env_file: .env
+    env_file:
+      - path: .env
+        required: false
     environment:
       RAG_STORE: postgres
       RAG_DATABASE_URL: postgresql+asyncpg://rag:rag@postgres:5432/rag
       RAG_REDIS_URL: redis://redis:6379/0
     command: ["sh", "-c", "alembic upgrade head && uvicorn ragengine.api.app:create_app --factory --host 0.0.0.0 --port 8000"]
-    ports: ["127.0.0.1:8000:8000"]
+    ports: ["127.0.0.1:58000:8000"]
+    volumes: [uploads:/app/data]
     depends_on:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
 
   worker:
-    build: .
+    image: rag-engine-api
     profiles: [app]
-    env_file: .env
+    env_file:
+      - path: .env
+        required: false
     environment:
       RAG_STORE: postgres
       RAG_DATABASE_URL: postgresql+asyncpg://rag:rag@postgres:5432/rag
       RAG_REDIS_URL: redis://redis:6379/0
     command: ["arq", "ragengine.worker.WorkerSettings"]
+    volumes: [uploads:/app/data]  # the worker reads the files the API stored
     depends_on:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
 
 volumes:
   pgdata:
+  uploads:
