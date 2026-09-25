@@ -43,6 +43,7 @@ class Chunk:
     metadata: dict[str, Any] = field(default_factory=dict)
     id: UUID = field(default_factory=uuid4)
     embedding: list[float] | None = None
+    version_id: UUID | None = None
 
 
 @dataclass(frozen=True, slots=True)
